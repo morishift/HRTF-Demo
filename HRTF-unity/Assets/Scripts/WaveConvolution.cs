@@ -138,73 +138,72 @@ namespace Test
         /// <param name="f">1ならばFFT,-1ならばIFFT</param>
         public static void FFT(float[] x, float[] y, int l, int f)
         {
-            // int i, j, j1, j2, l1, l2, l3, l4, l5, n, k, h, n4;
-            // float s, c/*, s1*/, t, tx, ty, /*arg*/;
+            int i, j, j1, j2, l1, l2, l3, l4, l5, n, k, h, n4;
+            float s, c, s1, t, tx, ty, arg;
 
-            // n = (int)Mathf.Pow(2.0f, l);
-            // l1 = n;
-            // n4 = n / 4;
-            // // s1 = f * 2.0f * Mathf.PI / n;
+            n = (int)Mathf.Pow(2.0f, l);
+            l1 = n;
+            n4 = n / 4;
+            s1 = f * 2.0f * Mathf.PI / n;
 
-            // for (l5 = 0; l5 < l; ++l5)
-            // {
-            //     l2 = l1 - 1;
-            //     l1 = l1 / 2;
-            //     h = 0;
-            //     arg = 0.0f;
+            for (l5 = 0; l5 < l; ++l5)
+            {
+                l2 = l1 - 1;
+                l1 = l1 / 2;
+                h = 0;
+                arg = 0.0f;
 
-            //     for (l3 = 0; l3 < l1; ++l3)
-            //     {
-            //         s = - f * sinTable[h];
-            //         c = sinTable[n4 + h];
-            //         //c = Mathf.Cos(arg);
-            //         //s = Mathf.Sin(arg);
-            //         //arg += s1;
+                for (l3 = 0; l3 < l1; ++l3)
+                {
+                    s = - f * sinTable[h];
+                    c = Mathf.Cos(arg);
+                    s = Mathf.Sin(arg);
+                    arg += s1;
 
-            //         for (l4 = l2; l4 < n; l4 += (l2 + 1))
-            //         {
-            //             j1 = l4 - l2 + l3;
-            //             j2 = j1 + l1;
-            //             tx = x[j1] - x[j2];
-            //             ty = y[j1] - y[j2];
-            //             x[j1] = x[j1] + x[j2];
-            //             y[j1] = y[j1] + y[j2];
-            //             x[j2] = c * tx + s * ty;
-            //             y[j2] = c * ty - s * tx;
-            //         }
-            //     }
-            //     // s1 = s1 * 2.0f;
-            // }
+                    for (l4 = l2; l4 < n; l4 += (l2 + 1))
+                    {
+                        j1 = l4 - l2 + l3;
+                        j2 = j1 + l1;
+                        tx = x[j1] - x[j2];
+                        ty = y[j1] - y[j2];
+                        x[j1] = x[j1] + x[j2];
+                        y[j1] = y[j1] + y[j2];
+                        x[j2] = c * tx + s * ty;
+                        y[j2] = c * ty - s * tx;
+                    }
+                }
+                s1 = s1 * 2.0f;
+            }
 
-            // if (f < 0)
-            // {
-            //     for (i = 0; i < n; ++i)
-            //     {
-            //         x[i] = x[i] / n;
-            //         y[i] = y[i] / n;
-            //     }
-            // }
+            if (f < 0)
+            {
+                for (i = 0; i < n; ++i)
+                {
+                    x[i] = x[i] / n;
+                    y[i] = y[i] / n;
+                }
+            }
 
-            // j = 0;
-            // for (i = 0; i < n - 1; ++i)
-            // {
-            //     if (i <= j)
-            //     {
-            //         t = x[i];
-            //         x[i] = x[j];
-            //         x[j] = t;
-            //         t = y[i];
-            //         y[i] = y[j];
-            //         y[j] = t;
-            //     }
-            //     k = n / 2;
-            //     while (k <= j)
-            //     {
-            //         j = j - k;
-            //         k = k / 2;
-            //     }
-            //     j += k;
-            // }
+            j = 0;
+            for (i = 0; i < n - 1; ++i)
+            {
+                if (i <= j)
+                {
+                    t = x[i];
+                    x[i] = x[j];
+                    x[j] = t;
+                    t = y[i];
+                    y[i] = y[j];
+                    y[j] = t;
+                }
+                k = n / 2;
+                while (k <= j)
+                {
+                    j = j - k;
+                    k = k / 2;
+                }
+                j += k;
+            }
         }
     }
 }
