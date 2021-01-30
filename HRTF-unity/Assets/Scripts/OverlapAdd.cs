@@ -32,6 +32,8 @@ namespace Test
             n = _n;
             nIR = _nir;
             nSample = _n - _nir + 1;
+            Debug.Assert(n == nIR - 1 + nSample);
+
             fft = new Fft(_n);
             frequencyResponseX = new float[_n];
             frequencyResponseY = new float[_n];
@@ -80,7 +82,7 @@ namespace Test
         /// <summary>
         /// 畳み込み結果
         /// </summary>
-        public float[] GetConvolutionResult()
+        public float[] GetConvolution()
         {
             return convolutionResult;
         }
