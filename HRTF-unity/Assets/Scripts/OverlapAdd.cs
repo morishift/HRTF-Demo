@@ -14,6 +14,7 @@ namespace Test
         const int SizeOfFloat = 4;
         int n;
         int nIR;
+        int nSample;
         Fft fft;
 
         float[] frequencyResponseX;
@@ -23,11 +24,14 @@ namespace Test
         float[] convolutionBuf1Y;
         float[] convolutionBuf2X;
         float[] convolutionBuf2Y;
+        float[] convolutionResult;
 
-        public OverlapAdd(int _n, int _nir)
+        public OverlapAdd(int _n, int _nsample, int _nir)
         {
+            Debug.Log($"nsample:{_nsample} n:{_n} nir:{_nir}");
             n = _n;
             nIR = _nir;
+            nSample = _n - _nir + 1;
             fft = new Fft(_n);
             frequencyResponseX = new float[_n];
             frequencyResponseY = new float[_n];
@@ -36,6 +40,7 @@ namespace Test
             convolutionBuf1Y = new float[_n];
             convolutionBuf2X = new float[_n];
             convolutionBuf2Y = new float[_n];
+            convolutionResult = new float[_n - _nir + 1];
         }
 
         /// <summary>
@@ -43,6 +48,8 @@ namespace Test
         /// </summary>
         public void SetImpulseResponse(float[] ir)
         {
+            Debug.Assert(ir.Length == nIR);
+
             Buffer.BlockCopy(ir, 0, frequencyResponseX, 0, SizeOfFloat * ir.Length);
             Array.Clear(frequencyResponseX, ir.Length, n - ir.Length);
             Array.Clear(frequencyResponseY, 0, n);
@@ -52,20 +59,38 @@ namespace Test
         /// <summary>
         /// 重畳加算法でsamplesとインパルス応答との畳み込みを計算する
         /// </summary>
-        public void Convert(float[] samples)
+        public void Convolution(float[] samples)
         {
+            Debug.Assert(samples.Length == nSample);
+
             Buffer.BlockCopy(samples, 0, convolutionBuf1X, 0, SizeOfFloat * samples.Length);
             Array.Clear(convolutionBuf1X, samples.Length, n - samples.Length);
             Array.Clear(convolutionBuf1Y, 0, n);
             fft.Forward(convolutionBuf1X, convolutionBuf1Y);
             ComplexMultiple(convolutionBuf2X, convolutionBuf2Y, convolutionBuf1X, convolutionBuf1Y, frequencyResponseX, frequencyResponseY);
             fft.Inverse(convolutionBuf2X, convolutionBuf2Y);
-            for (int i = n - nIR + 1, j = 0; i < n; ++i, ++j)
+            for (int i = nSample, j = 0; i < n; ++i, ++j)
             {
                 convolutionBuf2X[j] += overlap[j];
                 overlap[j] = convolutionBuf2X[i];
             }
-            Buffer.BlockCopy(convolutionBuf2X, 0, samples, 0, SizeOfFloat * samples.Length);
+            Buffer.BlockCopy(convolutionBuf2X, 0, convolutionResult, 0, SizeOfFloat * nSample);
+        }
+
+        /// <summary>
+        /// 畳み込み結果
+        /// </summary>
+        public float[] GetConvolutionResult()
+        {
+            return convolutionResult;
+        }
+
+        /// <summary>
+        /// オーバーラップ部取得
+        /// </summary>
+        public float[] GetOverlap()
+        {
+            return overlap;
         }
 
         /// <summary>

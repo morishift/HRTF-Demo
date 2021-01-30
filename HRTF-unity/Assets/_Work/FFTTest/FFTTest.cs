@@ -12,23 +12,44 @@ namespace Test
         [SerializeField]
         DebugButton debugButton;
 
-        float[] x = new float[Constant.DataSamples] { 1, 2, 3, 4, 5};
-        float[] y = new float[Constant.DataSamples] { 0, 0, 0, 0, 0};
-        float[] impulseX = new float[Constant.ImpulseSamples] { 1, 0, 0, 0};
-        float[] impulseY = new float[Constant.ImpulseSamples] { 0, 0, 0, 0};
-        float[] resultX = new float[Constant.DataSamples];
+        const int BufferSize = 1 << 3;
+        const int IRSize = 4;
+        const int SampleSize = BufferSize - IRSize + 1;
+
+        float[] x = new float[SampleSize] { 1, 2, 3, 4, 5 };
+        float[] impulseX = new float[IRSize] { 0.1f, 0.2f, 0.3f, 0.4f };
+        float[] resultX = new float[SampleSize];
 
         void Start()
         {
-            debugButton.AddButton("SetImpulseL", () =>
+            debugButton.AddButton("ConvertTest1", () => ConvertTest1());
+        }
+
+        /// <summary>
+        /// 変換テスト
+        /// </summary>
+        private void ConvertTest1()
+        {
+            Debug.Log($"SampleSize:{SampleSize}");
+
+            var v = new OverlapAdd(BufferSize, SampleSize, IRSize);
+            x.CopyTo(resultX, 0);
+            v.SetImpulseResponse(impulseX);
+            v.Convolution(resultX);
+            var c = v.GetConvolutionResult();
+
+            Debug.Log($"convolution =================================");
+            for (int i = 0; i < c.Length; ++i)
             {
-                WaveConvolution.SetImpulseL(impulseX);
-                WaveConvolution.ConvolutionL(resultX, x);
-                for (int i = 0; i < resultX.Length; ++i)
-                {
-                    Debug.Log($"{resultX[i]:0.00}");
-                }
-            });
+                Debug.Log($"[{i}]:{c[i]:0.00}");
+            }
+
+            Debug.Log($"overlap =================================");
+            var overlap = v.GetOverlap();
+            for (int i = 0; i < overlap.Length; ++i)
+            {
+                Debug.Log($"[{i}]:{overlap[i]:0.00}");
+            }
         }
     }
 }
