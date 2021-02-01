@@ -15,7 +15,9 @@ namespace Test
         [SerializeField]
         Button centerButton;
         [SerializeField]
-        RectTransform posRectTransform;
+        RectTransform pressRectTransform;
+        [SerializeField]
+        RectTransform trackRectTransform;
         [SerializeField]
         RectTransform pressPosRectTransform;
 
@@ -28,11 +30,11 @@ namespace Test
 
         void Start()
         {
-            circleRadius = posRectTransform.localPosition.magnitude;
+            circleRadius = pressRectTransform.localPosition.magnitude;
             centerButton.onClick.AddListener(OnClickCenterButton);
             isSelected = false;
             oldAngle = -1000;
-            posRectTransform.gameObject.SetActive(false);
+            pressRectTransform.gameObject.SetActive(false);
         }
 
         /// <summary>
@@ -62,6 +64,15 @@ namespace Test
         }
 
         /// <summary>
+        /// 現在再生中の音の発生位置
+        /// </summary>
+        public void SetTrackAngle(int angle)
+        {
+            angle = (360 - angle + 90) % 360;
+            trackRectTransform.localPosition = AngleToPositionOnCircumference(angle); 
+        }
+
+        /// <summary>
         /// 選択中ならばtrue
         /// </summary>
         public bool IsSelected()
@@ -77,14 +88,14 @@ namespace Test
             isSelected = false;
             oldAngle = -1000;
             onChangedAngle?.Invoke();
-            posRectTransform.gameObject.SetActive(false);
+            pressRectTransform.gameObject.SetActive(false);
         }
 
         void Update()
         {
             if (pointerDownFlg)
             {
-                posRectTransform.gameObject.SetActive(true);
+                pressRectTransform.gameObject.SetActive(true);
                 pressPosRectTransform.gameObject.SetActive(true);
                 isSelected = true;
                 Vector2 pos;
@@ -94,7 +105,7 @@ namespace Test
                 pressPosRectTransform.localPosition = pos;
                 selectedAngle = (int)(PositionToAngle(pos) + 360);
                 selectedAngle = ((selectedAngle * 10 + 25) / 50 * 50 / 10) % 360;
-                posRectTransform.localPosition = AngleToPositionOnCircumference(selectedAngle);
+                pressRectTransform.localPosition = AngleToPositionOnCircumference(selectedAngle);
                 if (oldAngle != GetAngle())
                 {
                     onChangedAngle?.Invoke();

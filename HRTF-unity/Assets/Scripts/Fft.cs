@@ -142,7 +142,7 @@ namespace Test
                     h += d;
                 }
             }
-            if (inverse)    /* 逆変換ならばnで割る */
+            if (inverse == false)  /* 逆変換でないならnで割る */
             {
                 for (i = 0; i < n; i++)
                 {

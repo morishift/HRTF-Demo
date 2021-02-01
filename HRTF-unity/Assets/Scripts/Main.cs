@@ -15,6 +15,9 @@ namespace Test
         Text debugText;
         [SerializeField]
         PositionCircle positionCircle;
+        [SerializeField]
+        Text fpsText;
+
         WaveAudioClip waveAudioClip;
 
         public class LRIR
@@ -26,17 +29,23 @@ namespace Test
         int currentAudioSourceIndex;
         Coroutine playCoroutine;
 
+        OverlapAdd overlapAddL = new OverlapAdd(Constant.BufferSize, Constant.DataSamples, Constant.ImpulseResponseSamples);
+        OverlapAdd overlapAddR = new OverlapAdd(Constant.BufferSize, Constant.DataSamples, Constant.ImpulseResponseSamples);
+        float[] waveInputBuffer = new float[Constant.DataSamples];
+        float[] waveOutputBuffer = new float[Constant.DataSamples * 2];
+
         void Start()
         {
+            Application.targetFrameRate = 60;
             Debug.Log($"SampleTime:{(float)Constant.DataSamples / Constant.Frequency:0.000}");
 
             waveAudioClip = WaveAudioClip.CreateWavAudioClip("Bytes/242_dr_bpm140_4-4_4_pop_mono.wav");
 
             debugButton.AddButton("ドラム", () =>
             {
-                waveAudioClip = WaveAudioClip.CreateWavAudioClip("Bytes/242_dr_bpm140_4-4_4_pop_mono.wav");            
+                waveAudioClip = WaveAudioClip.CreateWavAudioClip("Bytes/242_dr_bpm140_4-4_4_pop_mono.wav");
             });
- 
+
             positionCircle.onChangedAngle += OnChangedAngle;
 
             for (int degree = 0; degree < 360; degree += 5)
@@ -45,30 +54,7 @@ namespace Test
                 lrirDictionary[degree].waveAudioClipIRL = WaveAudioClip.CreateWavAudioClip($"Bytes/elev0/L0e{degree:000}a.wav");
                 lrirDictionary[degree].waveAudioClipIRR = WaveAudioClip.CreateWavAudioClip($"Bytes/elev0/R0e{degree:000}a.wav");
             }
-
-            // debugButton.AddButton("dsp", () =>
-            // {
-            //     Log($"dsp:{AudioSettings.dspTime:0.0000}");
-            //     CreateAudioClip(0, Frequency);
-            // });
-            // debugButton.AddButton("Play2", () =>
-            // {
-            //     Play2();
-            // });
         }
-
-        // /// <summary>
-        // /// 2つのAudioClipを使って連続的に再生
-        // /// </summary>
-        // private void Play2()
-        // {
-        //     StartCoroutine(PlayCoroutine());
-        // }
-
-        float[] waveBuffer = new float[Constant.DataSamples];
-        float[] waveChannelL = new float[Constant.DataSamples];
-        float[] waveChannelR = new float[Constant.DataSamples];
-        float[] waveData = new float[Constant.DataSamples * 2];
 
         /// <summary>
         /// Streaming形式でサウンド作成
@@ -77,17 +63,18 @@ namespace Test
         {
             Debug.Log($"channels:{waveAudioClip.channels} frequency:{waveAudioClip.frequency} samples:{waveAudioClip.samples}");
 
-            waveAudioClip.GetData(waveBuffer, offset, size);
-            WaveConvolution.ConvolutionL(waveChannelL, waveBuffer);
-            waveAudioClip.GetData(waveBuffer, offset, size);
-            WaveConvolution.ConvolutionR(waveChannelR, waveBuffer);
-            for (int i = 0; i < size * 2; i += 2)
+            waveAudioClip.GetData(waveInputBuffer, offset, size);
+            overlapAddL.Convolution(waveInputBuffer);
+            overlapAddR.Convolution(waveInputBuffer);
+            float[] output_l = overlapAddL.GetConvolution();
+            float[] output_r = overlapAddR.GetConvolution();
+            for (int i = 0, j = 0; j < size; i += 2, ++j)
             {
-                waveData[i] = waveChannelL[i / 2];
-                waveData[i + 1] = waveChannelR[i / 2];
+                waveOutputBuffer[i] = output_l[j];
+                waveOutputBuffer[i + 1] = output_r[j];
             }
             var clip = AudioClip.Create("Sound", size, 2, waveAudioClip.frequency, false);
-            clip.SetData(waveData, 0);
+            clip.SetData(waveOutputBuffer, 0);
             return clip;
         }
 
@@ -101,30 +88,32 @@ namespace Test
                 playCoroutine = StartCoroutine(PlayCoroutine());
             }
 
-            
+
             Debug.Log($"angle:{positionCircle.GetAngle()}");
             int degree = positionCircle.GetAngle();
             if (positionCircle.IsSelected())
             {
                 DebugText($"{positionCircle.GetAngle()}°");
-                WaveConvolution.SetImpulseL(lrirDictionary[degree].waveAudioClipIRL.waveData);
-                WaveConvolution.SetImpulseR(lrirDictionary[degree].waveAudioClipIRR.waveData);
+                overlapAddL.SetImpulseResponse(lrirDictionary[degree].waveAudioClipIRL.waveData);
+                overlapAddR.SetImpulseResponse(lrirDictionary[degree].waveAudioClipIRR.waveData);
             }
             else
             {
                 DebugText($"通常再生");
-                WaveConvolution.SetImpulseIdentify();
+                overlapAddL.SetIdentifyImpulseResponse();
+                overlapAddR.SetIdentifyImpulseResponse();
             }
+
             ResetPlayingAudioSource();
             NextAudioSource();
-            currentAudioSource.Stop();
+            ///currentAudioSource.Stop();
 
-            // double play_time = AudioSettings.dspTime;
-            // currentAudioSource.SetScheduledEndTime(play_time);
-            // NextAudioSource();
-            // int offset = (int)((prevAudioSource.endScheduledTime - playStartTime) * Constant.Frequency);
-            // currentAudioSource.PlayScheduled(CreateAudioClip(offset, Constant.DataSamples), prevAudioSource.endScheduledTime);
-            // NextAudioSource();
+            double play_time = AudioSettings.dspTime + 0.1f;
+            currentAudioSource.SetScheduledEndTime(play_time);
+            NextAudioSource();
+            int offset = (int)((prevAudioSource.endScheduledTime - playStartTime) * Constant.Frequency);
+            currentAudioSource.PlayScheduled(CreateAudioClip(offset, Constant.DataSamples), prevAudioSource.endScheduledTime);
+            NextAudioSource();
         }
 
         /// <summary>
@@ -214,6 +203,12 @@ namespace Test
         {
             debugText.text = str;
         }
+
+        void Update()
+        {
+            fpsText.text = $"{1 / Time.deltaTime:0.00}";
+        }
+
     }
 }
 

@@ -58,6 +58,15 @@ namespace Test
             fft.Forward(frequencyResponseX, frequencyResponseY);
         }
 
+        public void SetIdentifyImpulseResponse()
+        {
+            for (int i = 0; i < n; ++i)
+            {
+                frequencyResponseX[i] = 1.0f;
+                frequencyResponseY[i] = 1.0f;
+            }
+        }
+
         /// <summary>
         /// 重畳加算法でsamplesとインパルス応答との畳み込みを計算する
         /// </summary>
