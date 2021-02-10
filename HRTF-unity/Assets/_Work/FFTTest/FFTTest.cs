@@ -37,6 +37,7 @@ namespace Test
             float[] c;
             var v = new OverlapAdd(constant);
             v.SetImpulseResponse(impulseX);
+            //v.SetIdentifyImpulseResponse();
             v.Convolution(x1);
             c = v.GetConvolution();
 
@@ -62,17 +63,20 @@ namespace Test
             }
         }
 
+        /// <summary>
+        /// FFTテスト
+        /// </summary>
         private void FftTestFunc()
         {
-            float[] x = new float[] { 1, 2, 3, 4 };
+            float[] x = new float[] { 1, 0, 0, 0 };
             float[] y = new float[] { 0, 0, 0, 0 };
             var t = new Fft(4);
             t.Forward(x, y);
-            t.Inverse(x, y);
+            //t.Inverse(x, y);
             Debug.Log($"result =================================");
             for (int i = 0; i < x.Length; ++i)
             {
-                Debug.Log($"[{i}]:{x[i]:0.00}");
+                Debug.Log($"[{i}]:{x[i]:0.00} {y[i]:0.00}");
             }
         }
     }

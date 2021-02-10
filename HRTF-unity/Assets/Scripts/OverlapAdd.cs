@@ -59,12 +59,27 @@ namespace Test
             fft.Forward(frequencyResponseX, frequencyResponseY);
         }
 
+        /// <summary>
+        /// FFT済みインパルス応答から周波数応答を設定する
+        /// </summary>
+        public void SetTransformedImpulseResponse(float[] x, float[] y)
+        {
+            Debug.Assert(x.Length == blockSize);
+            Debug.Assert(y.Length == blockSize);
+            Buffer.BlockCopy(x, 0, frequencyResponseX, 0, SizeofFloat * blockSize);
+            Buffer.BlockCopy(y, 0, frequencyResponseY, 0, SizeofFloat * blockSize);
+        }
+
+        /// <summary>
+        /// 時刻0で値1のインパルス応答で設定する
+        /// 実質無変換になる
+        /// </summary>
         public void SetIdentifyImpulseResponse()
         {
             for (int i = 0; i < blockSize; ++i)
             {
                 frequencyResponseX[i] = 1.0f;
-                frequencyResponseY[i] = 1.0f;
+                frequencyResponseY[i] = 0.0f;
             }
         }
 
