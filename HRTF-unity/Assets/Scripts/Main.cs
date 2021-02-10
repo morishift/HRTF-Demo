@@ -83,6 +83,11 @@ namespace Test
             Buffer.BlockCopy(ret_l, 0, buffer.left, 0, c.blockSamples * SizeofFloat);
             Buffer.BlockCopy(ret_r, 0, buffer.right, 0, c.blockSamples * SizeofFloat);
         }
+
+        void Update()
+        {
+            positionCircle.SetTrackAngle(positionCircleLog.GetAngleAtTime(AudioSettings.dspTime - c.audioClipLength));
+        }
     }
 }
 
