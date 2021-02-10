@@ -12,16 +12,19 @@ namespace Test
         [SerializeField]
         DebugButton debugButton;
 
-        const int BufferSize = 1 << 3;
-        const int IRSize = 4;
-        const int SampleSize = BufferSize - IRSize + 1;
-
-        float[] x1 = new float[SampleSize] { 1, 2, 3, 4, 5 };
-        float[] x2 = new float[SampleSize] { 6, 5, 3, 2, 1 };
-        float[] impulseX = new float[IRSize] { 0.1f, 0.2f, 0.3f, 0.4f };
+        Constant constant;
+        float[] x1; 
+        float[] x2; 
+        float[] impulseX;
+        
 
         void Start()
         {
+            constant = new Constant();
+            constant.SetTest();
+            x1 = new float[] { 1, 2, 3, 4, 5 };
+            x2 = new float[] { 6, 5, 3, 2, 1 };
+            impulseX = new float[] { 0.1f, 0.2f, 0.3f, 0.4f };
             debugButton.AddButton("ConvertTest1", () => ConvertTest1());
         }
 
@@ -30,9 +33,8 @@ namespace Test
         /// </summary>
         private void ConvertTest1()
         {
-            Debug.Log($"SampleSize:{SampleSize}");
             float[] c;
-            var v = new OverlapAdd(BufferSize, SampleSize, IRSize);
+            var v = new OverlapAdd(constant);
             v.SetImpulseResponse(impulseX);
             v.Convolution(x1);
             c = v.GetConvolution();

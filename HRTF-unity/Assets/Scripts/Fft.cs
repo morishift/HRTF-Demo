@@ -107,7 +107,7 @@ namespace Test
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        private int FftCore(bool inverse, float[] x, float[] y)
+        private void FftCore(bool inverse, float[] x, float[] y)
         {
             int i, j, k, ik, h, d, k2, n4;
             float t, s, c, dx, dy;
@@ -150,7 +150,6 @@ namespace Test
                     y[i] /= n;
                 }
             }
-            return 0;  /* 正常終了 */
         }
     }
 }

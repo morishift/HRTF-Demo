@@ -5,11 +5,32 @@ using UnityEngine;
 namespace Test
 {
 
-    public static class Constant
+    public class Constant
     {
-        public const int Frequency = 44100;
-        public const int ImpulseResponseSamples = 512;
-        public const int BufferSize = 1 << 16;
-        public const int DataSamples = BufferSize - (ImpulseResponseSamples - 1);
+        public int frequency;
+        public int impulseResponseSamples;
+        public int blockSamples;
+        public int blockSize;
+
+        public Constant()
+        {
+            SetDefault();
+        }
+
+        public void SetDefault()
+        {
+            frequency = 44100;
+            impulseResponseSamples = 512;
+            blockSize = 1 << 16;
+            blockSamples = blockSize - (impulseResponseSamples - 1);
+        }
+
+        public void SetTest()
+        {
+            frequency = 44100;
+            impulseResponseSamples = 4;
+            blockSize = 8;
+            blockSamples = blockSize - (impulseResponseSamples - 1);
+        }
     }
 }

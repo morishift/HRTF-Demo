@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,30 +9,25 @@ namespace Test
         float [] subBlockL;
         float [] subBlockR;
         float[] subBlockSamples;
-        int subBlockSize;
         PositionCircleLog positionCircleLog;
         WaveAudioClip waveAudioClip;
         OverlapAdd overlapAddL;
+        Constant constant;
 
-        public AudioClipCreator(int blocksz, PositionCircleLog log, WaveAudioClip wave)
+        public AudioClipCreator(Constant c, PositionCircleLog log, WaveAudioClip wave)
         {
-            subBlockSize = blocksz;
+            constant = c;
             positionCircleLog = log;
             waveAudioClip = wave;
-            subBlockSamples = new float[blocksz * 2];
-            
+            subBlockSamples = new float[constant.blockSize];
+            overlapAddL = new OverlapAdd(c);
         }
 
-        public AudioClip CreateAudioClip(int offset, int blockcount)
-        {
+        // public void CreateSubBlock(int angle, int offset)
+        // {
+        //     waveAudioClip.GetData(subBlockL, offset, subBlockSize);
             
-        }
-
-        public void CreateSubBlock(int angle, int offset)
-        {
-            waveAudioClip.GetData(subBlockL, offset, subBlockSize);
-            
-        }
+        // }
     }
 }
 
