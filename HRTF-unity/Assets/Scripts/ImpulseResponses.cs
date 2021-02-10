@@ -38,7 +38,7 @@ namespace Test
 
             for (int i = 0; i < 360; i += 5)
             {
-                Debug.Log($"Load angle:{i}");
+                // Debug.Log($"Load angle:{i}");
                 var ir = new Data(c.blockSize);
                 var clip_l = WaveAudioClip.CreateWavAudioClip($"Bytes/elev0/L0e{i:000}a.wav");
                 Debug.Assert(clip_l.samples == c.impulseResponseSamples);

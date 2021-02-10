@@ -11,7 +11,11 @@ namespace Test
         const int SizeofFloat = 4;
 
         [SerializeField]
-        Text messageText;
+        Text messageText1;
+
+        [SerializeField]
+        Text messageText2;
+
         [SerializeField]
         PositionCircle positionCircle;
         [SerializeField]
@@ -89,7 +93,17 @@ namespace Test
             int angle1 = positionCircle.GetAngle();
             int angle2 = positionCircleLog.GetAngleAtTime(AudioSettings.dspTime - c.audioClipLength);
             positionCircle.SetTrackAngle(angle2);
-            messageText.text = $"{angle1}°\n\n{angle2}°";
+            
+            messageText1.gameObject.SetActive(angle1 >= 0);
+            if (angle1 >= 0)
+            {
+                messageText1.text = $"{angle1}°";
+            }
+            messageText2.gameObject.SetActive(angle2 >= 0);
+            if (angle2 >= 0)
+            {
+                messageText2.text = $"{angle2}°";
+            }
         }
     }
 }

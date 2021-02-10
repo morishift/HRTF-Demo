@@ -45,7 +45,7 @@ namespace Test
                 angleAndTimeLog.RemoveAt(0);
             }
 
-            Debug.Log($"angleAndTimeLog.Count:{angleAndTimeLog.Count}");
+            // Debug.Log($"angleAndTimeLog.Count:{angleAndTimeLog.Count}");
         }
 
         /// <summary>
