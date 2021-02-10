@@ -634,7 +634,7 @@ GameObject:
   - component: {fileID: 1147089211}
   - component: {fileID: 1147089215}
   m_Layer: 5
-  m_Name: FFTTest
+  m_Name: EtcTest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -734,6 +734,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugButton: {fileID: 2108127063}
+  convertTestFlg: 1
+  fftTestFlg: 0
 --- !u!1 &1222582794
 GameObject:
   m_ObjectHideFlags: 0

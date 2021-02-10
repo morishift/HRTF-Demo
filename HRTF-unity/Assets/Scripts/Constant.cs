@@ -17,7 +17,7 @@ namespace Test
             SetDefault();
         }
 
-        public void SetDefault()
+        private void SetDefault()
         {
             frequency = 44100;
             impulseResponseSamples = 512;
@@ -25,12 +25,28 @@ namespace Test
             blockSamples = blockSize - (impulseResponseSamples - 1);
         }
 
-        public void SetTest()
+        private void SetTest()
         {
             frequency = 44100;
             impulseResponseSamples = 4;
             blockSize = 8;
             blockSamples = blockSize - (impulseResponseSamples - 1);
+        }
+
+        ////////////////////////////////////////////////////////////////
+
+        public static Constant CreateDefault()
+        {
+            var c = new Constant();
+            c.SetDefault();
+            return c;
+        }
+
+        public static Constant CreateTest()
+        {
+            var c = new Constant();
+            c.SetTest();
+            return c;
         }
     }
 }

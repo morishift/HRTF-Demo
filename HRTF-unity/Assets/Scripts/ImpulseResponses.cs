@@ -30,20 +30,22 @@ namespace Test
         /// <summary>
         /// すべてのインパルス応答を読み込む
         /// </summary>
-        public static void LoadAll(int bufsize, int irsize)
+        public static void LoadAll(Constant c)
         {
             dictionary.Clear();
 
-            Fft fft = new Fft(bufsize);
+            Fft fft = new Fft(c.blockSize);
 
             for (int i = 0; i < 360; i += 5)
             {
-                var ir = new ImpulseResponse(bufsize);
+                var ir = new ImpulseResponse(c.blockSize);
                 var clip_l = WaveAudioClip.CreateWavAudioClip($"Bytes/elev0/L0e{i:000}a.wav");
-                clip_l.GetData(ir.channelLX, 0, irsize);
+                Debug.Assert(clip_l.samples == c.impulseResponseSamples);
+                clip_l.GetData(ir.channelLX, 0, c.impulseResponseSamples);
                 fft.Forward(ir.channelLX, ir.channelLY);
                 var clip_r = WaveAudioClip.CreateWavAudioClip($"Bytes/elev0/R0e{i:000}a.wav");
-                clip_r.GetData(ir.channelLX, 0, irsize);
+                Debug.Assert(clip_r.samples == c.impulseResponseSamples);
+                clip_r.GetData(ir.channelLX, 0, c.impulseResponseSamples);
                 fft.Forward(ir.channelRX, ir.channelRY);
                 ir.angle = i;
                 dictionary[i] = ir;

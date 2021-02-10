@@ -11,15 +11,15 @@ namespace Test
     {
         [SerializeField]
         DebugButton debugButton;
-
+        
         void Start()
-        {
+        {            
             debugButton.AddButton("LoadAll", () => LoadImpulseResponse());
         }
 
         private void LoadImpulseResponse()
         {
-            ImpulseResponses.LoadAll(8, 8);
+            ImpulseResponses.LoadAll(Constant.CreateDefault());
         }
 
         /// <summary>
