@@ -10,9 +10,9 @@ namespace Test
     /// </summary>
     public static class ImpulseResponses
     {
-        public class ImpulseResponse
+        public class Data
         {
-            public ImpulseResponse(int bufsize)
+            public Data(int bufsize)
             {
                 channelLX = new float[bufsize];
                 channelLY = new float[bufsize];
@@ -25,25 +25,28 @@ namespace Test
             public float[] channelRY;
             public int angle;
         }
-        static Dictionary<int, ImpulseResponse> dictionary = new Dictionary<int, ImpulseResponse>();
+        static Dictionary<int, Data> dictionary = new Dictionary<int, Data>();
 
         /// <summary>
         /// すべてのインパルス応答を読み込む
         /// </summary>
-        public static void LoadAll(int bufsize, int irsize)
+        public static void LoadAll(Constant c)
         {
             dictionary.Clear();
 
-            Fft fft = new Fft(bufsize);
+            Fft fft = new Fft(c.blockSize);
 
             for (int i = 0; i < 360; i += 5)
             {
-                var ir = new ImpulseResponse(bufsize);
+                Debug.Log($"Load angle:{i}");
+                var ir = new Data(c.blockSize);
                 var clip_l = WaveAudioClip.CreateWavAudioClip($"Bytes/elev0/L0e{i:000}a.wav");
-                clip_l.GetData(ir.channelLX, 0, irsize);
+                Debug.Assert(clip_l.samples == c.impulseResponseSamples);
+                clip_l.GetData(ir.channelLX, 0, c.impulseResponseSamples);
                 fft.Forward(ir.channelLX, ir.channelLY);
                 var clip_r = WaveAudioClip.CreateWavAudioClip($"Bytes/elev0/R0e{i:000}a.wav");
-                clip_r.GetData(ir.channelLX, 0, irsize);
+                Debug.Assert(clip_r.samples == c.impulseResponseSamples);
+                clip_r.GetData(ir.channelRX, 0, c.impulseResponseSamples);
                 fft.Forward(ir.channelRX, ir.channelRY);
                 ir.angle = i;
                 dictionary[i] = ir;
@@ -53,22 +56,16 @@ namespace Test
         /// <summary>
         /// 角度に対するDFT済みのインパルス応答取得
         /// </summary>
-        public static void GetTransformedImpulseResponse(int angle, out float[] lx, out float[] ly, out float[] rx, out float[] ry)
+        public static Data GetTransformedImpulseResponse(int angle)
         {
-            ImpulseResponse ir;
+            Data ir;
             if (dictionary.TryGetValue(angle, out ir))
             {
-                lx = ir.channelLX;
-                ly = ir.channelLY;
-                rx = ir.channelRX;
-                ry = ir.channelRY;
+                return ir;
             }
             else
             {
-                lx = null;
-                ly = null;
-                rx = null;
-                ry = null;
+                return null;
             }
         }
     }
