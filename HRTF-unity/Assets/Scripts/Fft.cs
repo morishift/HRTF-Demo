@@ -142,7 +142,10 @@ namespace Test
                     h += d;
                 }
             }
-            if (inverse == false)  /* 逆変換でないならnで割る */
+            // algo-c fft.cオリジナルでは、逆変換でないときにnで割っている
+            // この場合convolutionを求めるときにnを掛ける必要が出るため、逆変換のときにnで割るように変更
+            // if (inverse == false)  /* 逆変換でないならnで割る */
+            if (inverse)  /* 逆変換ならnで割る */
             {
                 for (i = 0; i < n; i++)
                 {

@@ -13,10 +13,10 @@ namespace Test
         DebugButton debugButton;
 
         Constant constant;
-        float[] x1; 
-        float[] x2; 
+        float[] x1;
+        float[] x2;
         float[] impulseX;
-        
+
 
         void Start()
         {
@@ -26,6 +26,7 @@ namespace Test
             x2 = new float[] { 6, 5, 3, 2, 1 };
             impulseX = new float[] { 0.1f, 0.2f, 0.3f, 0.4f };
             debugButton.AddButton("ConvertTest1", () => ConvertTest1());
+            debugButton.AddButton("FftTestFunc", () => FftTestFunc());
         }
 
         /// <summary>
@@ -58,6 +59,20 @@ namespace Test
             for (int i = 0; i < overlap.Length; ++i)
             {
                 Debug.Log($"[{i}]:{overlap[i]:0.00}");
+            }
+        }
+
+        private void FftTestFunc()
+        {
+            float[] x = new float[] { 1, 2, 3, 4 };
+            float[] y = new float[] { 0, 0, 0, 0 };
+            var t = new Fft(4);
+            t.Forward(x, y);
+            t.Inverse(x, y);
+            Debug.Log($"result =================================");
+            for (int i = 0; i < x.Length; ++i)
+            {
+                Debug.Log($"[{i}]:{x[i]:0.00}");
             }
         }
     }
