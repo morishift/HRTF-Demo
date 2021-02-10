@@ -1,4 +1,6 @@
-﻿#if true
+﻿#if false
+
+#if false
 
 using System.Collections;
 using System.Collections.Generic;
@@ -18,8 +20,8 @@ namespace Test
         static float[] dataDFTY = new float[Constant.ConvolutionBufferSize];
         static float[] convolutionBufX = new float[Constant.ConvolutionBufferSize];
         static float[] convolutionBufY = new float[Constant.ConvolutionBufferSize];
-        static float[] convolutionOverlapL = new float[Constant.ImpulseSamples - 1];
-        static float[] convolutionOverlapR = new float[Constant.ImpulseSamples - 1];
+        static float[] convolutionOverlapL = new float[Constant.ImpulseResponseSamples - 1];
+        static float[] convolutionOverlapR = new float[Constant.ImpulseResponseSamples - 1];
 
         static float[] sinTable = new float[Constant.ConvolutionBufferSize];
 
@@ -46,11 +48,11 @@ namespace Test
             FFT(dataDFTX, dataDFTY, Constant.ConvolutionBufferPow2, 1);
             ComplexMultiple(convolutionBufX, convolutionBufY, dataDFTX, dataDFTY, impulseDFTX_L, impulseDFTY_L);
             FFT(convolutionBufX, convolutionBufY, Constant.ConvolutionBufferPow2, -1);
-            for (int i = 0; i < Constant.ImpulseSamples - 1; ++i)
+            for (int i = 0; i < Constant.ImpulseResponseSamples - 1; ++i)
             {
                 convolutionBufX[i] += convolutionOverlapL[i];
             }
-            for (int i = 0; i < Constant.ImpulseSamples - 1; ++i)
+            for (int i = 0; i < Constant.ImpulseResponseSamples - 1; ++i)
             {
                 convolutionOverlapL[i] = convolutionBufX[data.Length + i];
             }
@@ -66,11 +68,11 @@ namespace Test
             FFT(dataDFTX, dataDFTY, Constant.ConvolutionBufferPow2, 1);
             ComplexMultiple(convolutionBufX, convolutionBufY, dataDFTX, dataDFTY, impulseDFTX_R, impulseDFTY_R);
             FFT(convolutionBufX, convolutionBufY, Constant.ConvolutionBufferPow2, -1);
-            for (int i = 0; i < Constant.ImpulseSamples - 1; ++i)
+            for (int i = 0; i < Constant.ImpulseResponseSamples - 1; ++i)
             {
                 convolutionBufX[i] += convolutionOverlapR[i];
             }
-            for (int i = 0; i < Constant.ImpulseSamples - 1; ++i)
+            for (int i = 0; i < Constant.ImpulseResponseSamples - 1; ++i)
             {
                 convolutionOverlapR[i] = convolutionBufX[data.Length + i];
             }
@@ -274,4 +276,5 @@ namespace Test
 
     }
 }
+#endif
 #endif

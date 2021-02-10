@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,212 +8,102 @@ namespace Test
 {
     public class Main : MonoBehaviour
     {
+        const int SizeofFloat = 4;
+
         [SerializeField]
-        DebugButton debugButton;
+        Text messageText1;
+
         [SerializeField]
-        ScheduledAudioSource[] audioSources;
-        [SerializeField]
-        Text debugText;
+        Text messageText2;
+
         [SerializeField]
         PositionCircle positionCircle;
-        WaveAudioClip waveAudioClip;
+        [SerializeField]
+        PositionCircleLog positionCircleLog;
+        [SerializeField]
+        AudioClipStreamingPlayer audioClipStreamingPlayer;
 
-        public class LRIR
-        {
-            public WaveAudioClip waveAudioClipIRL;
-            public WaveAudioClip waveAudioClipIRR;
-        }
-        Dictionary<int, LRIR> lrirDictionary = new Dictionary<int, LRIR>();
-        int currentAudioSourceIndex;
-        Coroutine playCoroutine;
+        Constant c;
+        bool isTouched;
+        WaveAudioClip waveAudioClip;
+        OverlapAdd overlapAddLeft;
+        OverlapAdd overlapAddRight;
+        float[] bufferSample;
 
         void Start()
         {
-            Debug.Log($"SampleTime:{(float)Constant.DataSamples / Constant.Frequency:0.000}");
-
+            Application.targetFrameRate = 60;
+            c = Constant.CreateDefault();
+            ImpulseResponses.LoadAll(c);
             waveAudioClip = WaveAudioClip.CreateWavAudioClip("Bytes/242_dr_bpm140_4-4_4_pop_mono.wav");
-
-            debugButton.AddButton("ドラム", () =>
-            {
-                waveAudioClip = WaveAudioClip.CreateWavAudioClip("Bytes/242_dr_bpm140_4-4_4_pop_mono.wav");            
-            });
- 
-            positionCircle.onChangedAngle += OnChangedAngle;
-
-            for (int degree = 0; degree < 360; degree += 5)
-            {
-                lrirDictionary[degree] = new LRIR();
-                lrirDictionary[degree].waveAudioClipIRL = WaveAudioClip.CreateWavAudioClip($"Bytes/elev0/L0e{degree:000}a.wav");
-                lrirDictionary[degree].waveAudioClipIRR = WaveAudioClip.CreateWavAudioClip($"Bytes/elev0/R0e{degree:000}a.wav");
-            }
-
-            // debugButton.AddButton("dsp", () =>
-            // {
-            //     Log($"dsp:{AudioSettings.dspTime:0.0000}");
-            //     CreateAudioClip(0, Frequency);
-            // });
-            // debugButton.AddButton("Play2", () =>
-            // {
-            //     Play2();
-            // });
-        }
-
-        // /// <summary>
-        // /// 2つのAudioClipを使って連続的に再生
-        // /// </summary>
-        // private void Play2()
-        // {
-        //     StartCoroutine(PlayCoroutine());
-        // }
-
-        float[] waveBuffer = new float[Constant.DataSamples];
-        float[] waveChannelL = new float[Constant.DataSamples];
-        float[] waveChannelR = new float[Constant.DataSamples];
-        float[] waveData = new float[Constant.DataSamples * 2];
-
-        /// <summary>
-        /// Streaming形式でサウンド作成
-        /// </summary>
-        private AudioClip CreateAudioClip(int offset, int size)
-        {
-            Debug.Log($"channels:{waveAudioClip.channels} frequency:{waveAudioClip.frequency} samples:{waveAudioClip.samples}");
-
-            waveAudioClip.GetData(waveBuffer, offset, size);
-            WaveConvolution.ConvolutionL(waveChannelL, waveBuffer);
-            waveAudioClip.GetData(waveBuffer, offset, size);
-            WaveConvolution.ConvolutionR(waveChannelR, waveBuffer);
-            for (int i = 0; i < size * 2; i += 2)
-            {
-                waveData[i] = waveChannelL[i / 2];
-                waveData[i + 1] = waveChannelR[i / 2];
-            }
-            var clip = AudioClip.Create("Sound", size, 2, waveAudioClip.frequency, false);
-            clip.SetData(waveData, 0);
-            return clip;
+            positionCircle.onTouched += OnTouched;
+            audioClipStreamingPlayer.onGetBuffer += OnGetBuffer;
+            overlapAddLeft = new OverlapAdd(c);
+            overlapAddRight = new OverlapAdd(c);
+            bufferSample = new float[c.blockSamples];
+            audioClipStreamingPlayer.Initialize(c);
         }
 
         /// <summary>
-        /// 角度が変化した
+        /// 最初にタッチされたときに音再生開始する
         /// </summary>
-        private void OnChangedAngle()
+        private void OnTouched()
         {
-            if (playCoroutine == null)
+            if (isTouched)
             {
-                playCoroutine = StartCoroutine(PlayCoroutine());
+                return;
             }
+            isTouched = true;
+            audioClipStreamingPlayer.Play(AudioSettings.dspTime + 1.0);
+        }
 
-            
-            Debug.Log($"angle:{positionCircle.GetAngle()}");
-            int degree = positionCircle.GetAngle();
-            if (positionCircle.IsSelected())
+        /// <summary>
+        /// AudioClipStreamingPlayerからのコールバック
+        /// 再生するサウンド情報を渡す
+        /// </summary>
+        private void OnGetBuffer(double dsptime, int offset, Constant c, AudioClipStreamingPlayer.Buffer buffer)
+        {
+            // Debug.Log($"dsptime:{dsptime:0.000} offset:{offset}");
+
+            waveAudioClip.GetData(bufferSample, offset, c.blockSamples);
+
+            int angle = positionCircleLog.GetAngleAtTime(dsptime - c.audioClipLength);
+            if (angle >= 0)
             {
-                DebugText($"{positionCircle.GetAngle()}°");
-                WaveConvolution.SetImpulseL(lrirDictionary[degree].waveAudioClipIRL.waveData);
-                WaveConvolution.SetImpulseR(lrirDictionary[degree].waveAudioClipIRR.waveData);
+                ImpulseResponses.Data data;
+                data = ImpulseResponses.GetTransformedImpulseResponse(angle);
+                overlapAddLeft.SetTransformedImpulseResponse(data.channelLX, data.channelLY);
+                overlapAddRight.SetTransformedImpulseResponse(data.channelRX, data.channelRY);
             }
             else
             {
-                DebugText($"通常再生");
-                WaveConvolution.SetImpulseIdentify();
+                overlapAddLeft.SetIdentifyImpulseResponse();
+                overlapAddRight.SetIdentifyImpulseResponse();
             }
-            ResetPlayingAudioSource();
-            NextAudioSource();
-            currentAudioSource.Stop();
-
-            // double play_time = AudioSettings.dspTime;
-            // currentAudioSource.SetScheduledEndTime(play_time);
-            // NextAudioSource();
-            // int offset = (int)((prevAudioSource.endScheduledTime - playStartTime) * Constant.Frequency);
-            // currentAudioSource.PlayScheduled(CreateAudioClip(offset, Constant.DataSamples), prevAudioSource.endScheduledTime);
-            // NextAudioSource();
+            overlapAddLeft.Convolution(bufferSample);
+            overlapAddRight.Convolution(bufferSample);
+            float[] ret_l = overlapAddLeft.GetConvolution();
+            float[] ret_r = overlapAddRight.GetConvolution();
+            Buffer.BlockCopy(ret_l, 0, buffer.left, 0, c.blockSamples * SizeofFloat);
+            Buffer.BlockCopy(ret_r, 0, buffer.right, 0, c.blockSamples * SizeofFloat);
         }
 
-        /// <summary>
-        /// 再生
-        /// </summary>
-        private IEnumerator PlayCoroutine()
+        void Update()
         {
-            playStartTime = AudioSettings.dspTime;
-            currentAudioSource.PlayScheduled(CreateAudioClip(0, Constant.DataSamples), playStartTime);
-            // Debug.Log($"dsp:{playStartTime:0.00}");
-            NextAudioSource();
-            while (true)
+            int angle1 = positionCircle.GetAngle();
+            int angle2 = positionCircleLog.GetAngleAtTime(AudioSettings.dspTime - c.audioClipLength);
+            positionCircle.SetTrackAngle(angle2);
+            
+            messageText1.gameObject.SetActive(angle1 >= 0);
+            if (angle1 >= 0)
             {
-                // AudioSourceの再生終了待ち
-                while (currentAudioSource.isPlaying)
-                {
-                    yield return 0;
-                }
-                // スケジューリング
-                int offset = (int)((prevAudioSource.endScheduledTime - playStartTime) * Constant.Frequency);
-                currentAudioSource.PlayScheduled(CreateAudioClip(offset, Constant.DataSamples), prevAudioSource.endScheduledTime);
-                // Debug.Log($"play:{currentAudioSource.playScheduledTime:0.00} end:{currentAudioSource.endScheduledTime:0.00}");
-                NextAudioSource();
-                Resources.UnloadUnusedAssets();
+                messageText1.text = $"{angle1}°";
             }
-        }
-
-        /// <summary>
-        /// 現在の空きScheduledAudioSource
-        /// </summary>
-        private ScheduledAudioSource currentAudioSource
-        {
-            get
+            messageText2.gameObject.SetActive(angle2 >= 0);
+            if (angle2 >= 0)
             {
-                return audioSources[currentAudioSourceIndex];
+                messageText2.text = $"{angle2}°";
             }
-        }
-
-        /// <summary>
-        /// ひとつ前のScheduledAudioSource
-        /// </summary>
-        private ScheduledAudioSource prevAudioSource
-        {
-            get
-            {
-                return audioSources[(currentAudioSourceIndex + 1) % 2];
-            }
-        }
-
-        /// <summary>
-        /// 再生開始時刻
-        /// </summary>
-        public double playStartTime
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// 次のAudioSourceへ遷移
-        /// </summary>
-        private void NextAudioSource()
-        {
-            currentAudioSourceIndex = (currentAudioSourceIndex + 1) % audioSources.Length;
-        }
-
-        /// <summary>
-        /// 今音を再生しているAudioSourceをcurrentAudioSourceに変更する
-        /// </summary>
-        private void ResetPlayingAudioSource()
-        {
-            double t = AudioSettings.dspTime;
-            for (int i = 0; i < audioSources.Length; ++i)
-            {
-                if (audioSources[i].playScheduledTime <= t && t <= audioSources[i].endScheduledTime)
-                {
-                    currentAudioSourceIndex = i;
-                    return;
-                }
-            }
-        }
-
-        /// <summary>
-        /// ログ出力
-        /// </summary>
-        private void DebugText(string str)
-        {
-            debugText.text = str;
         }
     }
 }
