@@ -11,10 +11,12 @@ namespace Test
     {
         [SerializeField]
         DebugButton debugButton;
+        [SerializeField]
+        AudioClipStreamingPlayer audioClipStreamingPlayer;
 
         float[] x1;
         float[] x2;
-        float[] impulseX;
+        float[] impulseX;        
 
         [SerializeField]
         bool convertTestFlg;
@@ -22,12 +24,17 @@ namespace Test
         bool fftTestFlg;
         [SerializeField]
         bool impulseResponsesFlg;
+        [SerializeField]
+        bool audioClipStreamingPlayerTestFlg;
+
+        WaveAudioClip waveAudioClip;
 
         void Start()
         {
             ConvertTest();
             FftTest();
             ImpulseResponsesTest();
+            AudioClipStreamingPlayerTest();
         }
 
         /// <summary>
@@ -108,6 +115,39 @@ namespace Test
             {
                 ImpulseResponses.LoadAll(Constant.CreateDefault());
             });
+        }
+
+        /// <summary>
+        /// AudioClipStreamingPlayerのテスト
+        /// </summary>
+        private void AudioClipStreamingPlayerTest()
+        {
+            if (!audioClipStreamingPlayerTestFlg)
+                return;
+
+            audioClipStreamingPlayer.Initialize(Constant.CreateDefault());
+            waveAudioClip = WaveAudioClip.CreateWavAudioClip("Bytes/242_dr_bpm140_4-4_4_pop_mono.wav");
+            audioClipStreamingPlayer.onGetBuffer += OnGetBuffer;
+
+            debugButton.AddButton("AudioClipStreamingPlayerTest", () =>
+            {
+                audioClipStreamingPlayer.Play(AudioSettings.dspTime + 1.0f);
+            });
+            debugButton.AddButton("AudioClipStreamingPlayerTest Stop", () =>
+            {
+                audioClipStreamingPlayer.Stop();
+            });
+        }
+
+        /// <summary>
+        /// AudioClipStreamingPlayerからのコールバック
+        /// 再生するサウンド情報を渡す
+        /// </summary>
+        private void OnGetBuffer(double dsptime, int offset, Constant c, AudioClipStreamingPlayer.Buffer buffer)
+        {
+            Debug.Log($"dsptime:{dsptime:0.000} offset:{offset}");
+            waveAudioClip.GetData(buffer.left, offset, buffer.left.Length);
+            waveAudioClip.GetData(buffer.right, offset, buffer.right.Length);
         }
     }
 }

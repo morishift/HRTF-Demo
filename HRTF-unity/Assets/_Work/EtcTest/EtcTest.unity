@@ -420,6 +420,7 @@ GameObject:
   m_Component:
   - component: {fileID: 951300955}
   - component: {fileID: 951300953}
+  - component: {fileID: 951300954}
   m_Layer: 0
   m_Name: AudioSource2
   m_TagString: Untagged
@@ -523,6 +524,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &951300954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 951300952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37b78dedafd53fe4d9626db2b1b5fe03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource: {fileID: 951300953}
 --- !u!4 &951300955
 Transform:
   m_ObjectHideFlags: 0
@@ -619,6 +633,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1125269042
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1125269044}
+  - component: {fileID: 1125269043}
+  m_Layer: 0
+  m_Name: AudioClipStreamingPlayer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1125269043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1125269042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8c9a50fecd14a54eb187a9ba65cf35d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSources:
+  - {fileID: 1833187921}
+  - {fileID: 951300954}
+--- !u!4 &1125269044
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1125269042}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1147089210
 GameObject:
@@ -734,9 +794,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugButton: {fileID: 2108127063}
+  audioClipStreamingPlayer: {fileID: 1125269043}
   convertTestFlg: 0
   fftTestFlg: 0
-  impulseResponsesFlg: 1
+  impulseResponsesFlg: 0
+  audioClipStreamingPlayerTestFlg: 1
 --- !u!1 &1222582794
 GameObject:
   m_ObjectHideFlags: 0
@@ -888,6 +950,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1833187919}
   - component: {fileID: 1833187920}
+  - component: {fileID: 1833187921}
   m_Layer: 0
   m_Name: AudioSource1
   m_TagString: Untagged
@@ -1005,6 +1068,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1833187921
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1833187918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37b78dedafd53fe4d9626db2b1b5fe03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource: {fileID: 1833187920}
 --- !u!1 &1850570300
 GameObject:
   m_ObjectHideFlags: 0
