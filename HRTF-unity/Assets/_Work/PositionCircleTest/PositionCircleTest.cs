@@ -38,6 +38,7 @@ namespace Test
         {
             fpsText.text = $"{1 / Time.deltaTime:0.00}";
             int angle = positionCircleLog.GetAngleAtTime(AudioSettings.dspTime - 1.0);
+            Debug.Log($"angle:{angle}");
             positionCircle.SetTrackAngle(angle);
             trackAngle = angle;
         }

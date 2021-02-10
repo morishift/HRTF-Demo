@@ -11,6 +11,7 @@ namespace Test
     public class PositionCircle : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         public Action onChangedAngle;
+        public Action onTouched;
 
         [SerializeField]
         Button centerButton;
@@ -26,14 +27,14 @@ namespace Test
         bool pointerDownFlg;
         bool isSelected;
         RectTransform _rectTransformCache;
-        int oldAngle = -1000;
+        int oldAngle = -1;
 
         void Start()
         {
             circleRadius = pressRectTransform.localPosition.magnitude;
             centerButton.onClick.AddListener(OnClickCenterButton);
             isSelected = false;
-            oldAngle = -1000;
+            oldAngle = -1;
             pressRectTransform.gameObject.SetActive(false);
         }
 
@@ -43,6 +44,7 @@ namespace Test
         public void OnPointerDown(PointerEventData data)
         {
             pointerDownFlg = true;
+            onTouched?.Invoke();
         }
 
         /// <summary>
@@ -60,6 +62,10 @@ namespace Test
         /// </summary>
         public int GetAngle()
         {
+            if (!isSelected)
+            {
+                return -1;
+            }
             return (360 - selectedAngle + 90) % 360;
         }
 
@@ -68,6 +74,7 @@ namespace Test
         /// </summary>
         public void SetTrackAngle(int angle)
         {
+            trackRectTransform.gameObject.SetActive(angle >= 0);
             angle = (360 - angle + 90) % 360;
             trackRectTransform.localPosition = AngleToPositionOnCircumference(angle); 
         }
@@ -86,9 +93,10 @@ namespace Test
         private void OnClickCenterButton()
         {
             isSelected = false;
-            oldAngle = -1000;
+            oldAngle = -1;
             onChangedAngle?.Invoke();
             pressRectTransform.gameObject.SetActive(false);
+            onTouched?.Invoke();
         }
 
         void Update()

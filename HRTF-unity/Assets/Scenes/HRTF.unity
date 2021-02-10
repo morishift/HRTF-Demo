@@ -479,6 +479,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 898215876}
   m_CullTransparentMesh: 0
+--- !u!1 &996335519
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 996335521}
+  - component: {fileID: 996335520}
+  m_Layer: 0
+  m_Name: AudioClipStreamingPlayer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &996335520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 996335519}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8c9a50fecd14a54eb187a9ba65cf35d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSources:
+  - {fileID: 1505398764}
+  - {fileID: 1108268381}
+--- !u!4 &996335521
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 996335519}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1041515310
 GameObject:
   m_ObjectHideFlags: 0
@@ -715,16 +761,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1165887310}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 39ee99a83ba1dd3468017bdccdcf1aa0, type: 3}
+  m_Script: {fileID: 11500000, guid: 2a3429edbb1339d47a96249039a30294, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugButton: {fileID: 1467329024}
-  audioSources:
-  - {fileID: 1505398764}
-  - {fileID: 1108268381}
-  debugText: {fileID: 849507484}
-  positionCircle: {fileID: 1960861597}
-  fpsText: {fileID: 1784000771}
 --- !u!114 &1165887312
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1280,7 +1319,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1 &1661694722
 GameObject:
@@ -1659,7 +1698,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1960861595
 PrefabInstance:
@@ -1786,15 +1825,3 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1960861595}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1960861597 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 610345708156103209, guid: 59f0c09fb86e0f243b653559fd4a5a03,
-    type: 3}
-  m_PrefabInstance: {fileID: 1960861595}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c22475a96a1788418833cfae927734e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
