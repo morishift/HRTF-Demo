@@ -32,9 +32,9 @@ namespace Test
         {
             frequency = 44100;
             impulseResponseSamples = 512;
-            blockSize = 2 << 12;
+            blockSize = 2 << 10;
             blockSamples = blockSize - (impulseResponseSamples - 1);
-            audioClipBlockCount = 16;
+            audioClipBlockCount = 32;
             audioClipChannelSampleSize = blockSamples * audioClipBlockCount;
         }
 
