@@ -734,8 +734,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugButton: {fileID: 2108127063}
-  convertTestFlg: 1
+  convertTestFlg: 0
   fftTestFlg: 0
+  impulseResponsesFlg: 1
 --- !u!1 &1222582794
 GameObject:
   m_ObjectHideFlags: 0

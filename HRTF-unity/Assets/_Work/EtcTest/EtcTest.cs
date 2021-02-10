@@ -20,11 +20,14 @@ namespace Test
         bool convertTestFlg;
         [SerializeField]
         bool fftTestFlg;
+        [SerializeField]
+        bool impulseResponsesFlg;
 
         void Start()
         {
             ConvertTest();
             FftTest();
+            ImpulseResponsesTest();
         }
 
         /// <summary>
@@ -85,12 +88,25 @@ namespace Test
                 float[] y = new float[] { 0, 0, 0, 0 };
                 var t = new Fft(4);
                 t.Forward(x, y);
-                //t.Inverse(x, y);
+                t.Inverse(x, y);
                 Debug.Log($"result =================================");
                 for (int i = 0; i < x.Length; ++i)
                 {
                     Debug.Log($"[{i}]:{x[i]:0.00} {y[i]:0.00}");
                 }
+            });
+        }
+
+        /// <summary>
+        /// ImpulseResponsesテスト
+        /// </summary>
+        private void ImpulseResponsesTest()
+        {
+            if (!impulseResponsesFlg)
+                return;
+            debugButton.AddButton("ImpulseResponsesTest", () =>
+            {
+                ImpulseResponses.LoadAll(Constant.CreateDefault());
             });
         }
     }

@@ -52,7 +52,6 @@ namespace Test
         public void SetImpulseResponse(float[] ir)
         {
             Debug.Assert(ir.Length == impulseResponseSamples);
-
             Buffer.BlockCopy(ir, 0, frequencyResponseX, 0, SizeofFloat * ir.Length);
             Array.Clear(frequencyResponseX, ir.Length, blockSize - ir.Length);
             Array.Clear(frequencyResponseY, 0, blockSize);
