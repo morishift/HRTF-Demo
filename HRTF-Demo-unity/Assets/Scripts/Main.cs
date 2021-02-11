@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace Test
 {
-    public class Main : MonoBehaviour
+    public class Main : MonoBehaviour, IAudioClipStreamingBuffer
     {
         const int SizeofFloat = 4;
 
@@ -57,11 +57,10 @@ namespace Test
                 waveAudioClip = WaveAudioClip.CreateWavAudioClip("Bytes/PoliseCarSiren-mono.wav");
             });
             positionCircle.onTouched += OnTouched;
-            audioClipStreamingPlayer.onGetBuffer += OnGetBuffer;
             overlapAddLeft = new OverlapAdd(c);
             overlapAddRight = new OverlapAdd(c);
             bufferSample = new float[c.blockSamples];
-            audioClipStreamingPlayer.Initialize(c);
+            audioClipStreamingPlayer.Initialize(c, this);
         }
 
         /// <summary>
@@ -78,16 +77,22 @@ namespace Test
         }
 
         /// <summary>
-        /// AudioClipStreamingPlayerからのコールバック
-        /// 再生するサウンド情報を渡す
+        /// 時刻に対応する角度情報取得
         /// </summary>
-        private void OnGetBuffer(double dsptime, int offset, Constant c, AudioClipStreamingPlayer.Buffer buffer)
+        public void GetAngleAtTime(double[] dsptimes, int[] angles)
         {
-            // Debug.Log($"dsptime:{dsptime:0.000} offset:{offset}");
+            double t = c.audioClipLength + c.audioClipCreateOffsetTime;
+            for (int i = 0; i < dsptimes.Length; ++i)
+            {
+                angles[i] = positionCircleLog.GetAngleAtTime(dsptimes[i] - t);
+            }
+        }
 
-            waveAudioClip.GetData(bufferSample, offset, c.blockSamples);
-
-            int angle = positionCircleLog.GetAngleAtTime(dsptime - c.audioClipLength);
+        /// <summary>
+        /// 角度に対応するサウンドデータ取得 子スレッドから実行される
+        /// </summary>
+        public void GetBlockBuffer(int angle, int sampleoffset, AudioClipStreamingPlayer.BlockBuffer buffer)
+        {
             if (angle >= 0)
             {
                 ImpulseResponses.Data data;
@@ -101,6 +106,7 @@ namespace Test
                 overlapAddRight.SetIdentifyImpulseResponse();
             }
 
+            waveAudioClip.GetData(bufferSample, sampleoffset, c.blockSamples);
             overlapAddLeft.Convolution(bufferSample);
             overlapAddRight.Convolution(bufferSample);
             float[] ret_l = overlapAddLeft.GetConvolution();
@@ -112,7 +118,7 @@ namespace Test
         void Update()
         {
             int angle1 = positionCircle.GetAngle();
-            int angle2 = positionCircleLog.GetAngleAtTime(AudioSettings.dspTime - c.audioClipLength);
+            int angle2 = positionCircleLog.GetAngleAtTime(AudioSettings.dspTime - c.audioClipLength - c.audioClipCreateOffsetTime);
             positionCircle.SetTrackAngle(angle2);
 
             messageText1.gameObject.SetActive(angle1 >= 0);

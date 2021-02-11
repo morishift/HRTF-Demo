@@ -21,7 +21,7 @@ namespace Test
         /// <summary>
         /// AudioClip生成時の生成開始時刻オフセット
         /// </summary>
-        public double audioClipCreateOffsetTime => audioClipLength * 0.1;
+        public double audioClipCreateOffsetTime => audioClipLength * 0.2;
 
         public Constant()
         {

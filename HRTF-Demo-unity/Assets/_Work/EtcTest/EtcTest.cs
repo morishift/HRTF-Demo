@@ -7,7 +7,7 @@ using System;
 
 namespace Test
 {
-    public class EtcTest : MonoBehaviour
+    public class EtcTest : MonoBehaviour, IAudioClipStreamingBuffer
     {
         [SerializeField]
         DebugButton debugButton;
@@ -125,9 +125,8 @@ namespace Test
             if (!audioClipStreamingPlayerTestFlg)
                 return;
 
-            audioClipStreamingPlayer.Initialize(Constant.CreateDefault());
-            waveAudioClip = WaveAudioClip.CreateWavAudioClip("Bytes/242_dr_bpm140_4-4_4_pop_mono.wav");
-            audioClipStreamingPlayer.onGetBuffer += OnGetBuffer;
+            audioClipStreamingPlayer.Initialize(Constant.CreateDefault(), this);
+            waveAudioClip = WaveAudioClip.CreateWavAudioClip("Bytes/DrumLoop2.wav");
 
             debugButton.AddButton("AudioClipStreamingPlayerTest", () =>
             {
@@ -140,14 +139,24 @@ namespace Test
         }
 
         /// <summary>
+        /// 角度
+        /// </summary>
+        public void GetAngleAtTime(double[] dsptimes, int[] angle)
+        {
+            for (int i = 0; i < dsptimes.Length; ++i)
+            {
+                angle[i] = 0;
+            }
+        }
+
+        /// <summary>
         /// AudioClipStreamingPlayerからのコールバック
         /// 再生するサウンド情報を渡す
         /// </summary>
-        private void OnGetBuffer(double dsptime, int offset, Constant c, AudioClipStreamingPlayer.Buffer buffer)
+        public void GetBlockBuffer(int angle, int sampleoffset, AudioClipStreamingPlayer.BlockBuffer block)
         {
-            Debug.Log($"dsptime:{dsptime:0.000} offset:{offset}");
-            waveAudioClip.GetData(buffer.left, offset, buffer.left.Length);
-            waveAudioClip.GetData(buffer.right, offset, buffer.right.Length);
+            waveAudioClip.GetData(block.left, sampleoffset, block.left.Length);
+            waveAudioClip.GetData(block.right, sampleoffset, block.right.Length);
         }
     }
 }
