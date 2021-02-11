@@ -842,6 +842,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a3429edbb1339d47a96249039a30294, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugButton: {fileID: 1467329024}
   messageText1: {fileID: 849507484}
   messageText2: {fileID: 1152474737}
   positionCircle: {fileID: 1960861598}

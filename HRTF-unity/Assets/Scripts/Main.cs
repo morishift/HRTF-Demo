@@ -11,6 +11,9 @@ namespace Test
         const int SizeofFloat = 4;
 
         [SerializeField]
+        DebugButton debugButton;
+
+        [SerializeField]
         Text messageText1;
 
         [SerializeField]
@@ -35,7 +38,24 @@ namespace Test
             Application.targetFrameRate = 60;
             c = Constant.CreateDefault();
             ImpulseResponses.LoadAll(c);
-            waveAudioClip = WaveAudioClip.CreateWavAudioClip("Bytes/242_dr_bpm140_4-4_4_pop_mono.wav");
+
+            waveAudioClip = WaveAudioClip.CreateWavAudioClip("Bytes/TightFunkBreak-mono.wav");
+            debugButton.AddButton("Drum1", () =>
+            {
+                waveAudioClip = WaveAudioClip.CreateWavAudioClip("Bytes/TightFunkBreak-mono.wav");
+            });
+            debugButton.AddButton("Drum2", () =>
+            {
+                waveAudioClip = WaveAudioClip.CreateWavAudioClip("Bytes/DrumLoop2.wav");
+            });
+            debugButton.AddButton("OchestraStrings", () =>
+            {
+                waveAudioClip = WaveAudioClip.CreateWavAudioClip("Bytes/OchestraStrings-mono.wav");
+            });
+            debugButton.AddButton("Siren", () =>
+            {
+                waveAudioClip = WaveAudioClip.CreateWavAudioClip("Bytes/PoliseCarSiren-mono.wav");
+            });
             positionCircle.onTouched += OnTouched;
             audioClipStreamingPlayer.onGetBuffer += OnGetBuffer;
             overlapAddLeft = new OverlapAdd(c);
@@ -93,7 +113,7 @@ namespace Test
             int angle1 = positionCircle.GetAngle();
             int angle2 = positionCircleLog.GetAngleAtTime(AudioSettings.dspTime - c.audioClipLength);
             positionCircle.SetTrackAngle(angle2);
-            
+
             messageText1.gameObject.SetActive(angle1 >= 0);
             if (angle1 >= 0)
             {
