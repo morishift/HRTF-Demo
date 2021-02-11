@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 
 namespace Test
 {
+    /// <summary>
+    /// AudioClipをストリーミング再生のように再生する。
+    /// WebGLの場合async,awaitが使えないためマルチスレッドを使ったバッファ処理は行わない
+    /// </summary>
     public class AudioClipStreamingPlayer : MonoBehaviour
     {
         public class BlockBuffer
@@ -83,7 +87,11 @@ namespace Test
                 if (AudioSettings.dspTime < dspstart)
                 {
                     AudioClip audioclip = null;
+#if UNITY_WEBGL                    
+                    CreateAudioClip(dspstart, sampleoffset, (_c) => audioclip = _c);
+#else
                     FireAndForget(CreateAudioClip(dspstart, sampleoffset, (_c) => audioclip = _c));
+#endif                    
                     while (audioclip == null)
                     {
                         yield return 0;
@@ -94,47 +102,6 @@ namespace Test
                 dspstart += c.audioClipLength;
                 sampleoffset += c.audioClipChannelSampleSize;
             }
-        }
-
-
-        /// <summary>
-        /// 時刻dspstartから再生開始するAudioClipを生成する
-        /// </summary>
-        private async Task CreateAudioClip(double dspstart, int sampleoffset, Action<AudioClip> end)
-        {
-            double block_time = dspstart;
-            double block_time_length = c.blockSamples / (double)c.frequency;
-
-            // 時刻に対応する角度情報の取得
-            for (int i = 0; i < c.audioClipBlockCount; ++i)
-            {
-                dspTimes[i] = block_time;
-                block_time += block_time_length;
-            }
-            audioClipStreamingBuffer.GetAngleAtTime(dspTimes, angleAtTime);
-
-            // 畳み込み計算済みバッファ取得
-            await Task.Run(() =>
-            {
-                int k = 0;
-                for (int i = 0; i < c.audioClipBlockCount; ++i)
-                {
-                    audioClipStreamingBuffer.GetBlockBuffer(angleAtTime[i], sampleoffset, blockBuffer);
-                    for (int j = 0; j < c.blockSamples; ++j)
-                    {
-                        audioClipData[k] = blockBuffer.left[j];
-                        ++k;
-                        audioClipData[k] = blockBuffer.right[j];
-                        ++k;
-                    }
-                    sampleoffset += c.blockSamples;
-                }
-            });
-
-            // AudioClip生成
-            var clip = AudioClip.Create("Sound", c.audioClipChannelSampleSize, 2, c.frequency, false);
-            clip.SetData(audioClipData, 0);
-            end?.Invoke(clip);
         }
 
         /// <summary>
@@ -156,7 +123,58 @@ namespace Test
             currentAudioSourceIndex = (currentAudioSourceIndex + 1) % audioSources.Length;
         }
 
+#if UNITY_WEBGL
+        /// <summary>
+        /// 時刻dspstartから再生開始するAudioClipを生成する
+        /// </summary>
+        private void CreateAudioClip(double dspstart, int sampleoffset, Action<AudioClip> end)
+#else
+        private async Task CreateAudioClip(double dspstart, int sampleoffset, Action<AudioClip> end)
+#endif
 
+        {
+            double block_time = dspstart;
+            double block_time_length = c.blockSamples / (double)c.frequency;
+
+            // 時刻に対応する角度情報の取得
+            for (int i = 0; i < c.audioClipBlockCount; ++i)
+            {
+                dspTimes[i] = block_time;
+                block_time += block_time_length;
+            }
+            audioClipStreamingBuffer.GetAngleAtTime(dspTimes, angleAtTime);
+
+#if !UNITY_WEBGL
+            // 畳み込み計算済みバッファ取得
+            await Task.Run(() =>
+#endif            
+            {
+                int k = 0;
+                for (int i = 0; i < c.audioClipBlockCount; ++i)
+                {
+                    audioClipStreamingBuffer.GetBlockBuffer(angleAtTime[i], sampleoffset, blockBuffer);
+                    for (int j = 0; j < c.blockSamples; ++j)
+                    {
+                        audioClipData[k] = blockBuffer.left[j];
+                        ++k;
+                        audioClipData[k] = blockBuffer.right[j];
+                        ++k;
+                    }
+                    sampleoffset += c.blockSamples;
+                }
+            }
+#if !UNITY_WEBGL            
+            );
+#endif            
+
+            // AudioClip生成
+            var clip = AudioClip.Create("Sound", c.audioClipChannelSampleSize, 2, c.frequency, false);
+            clip.SetData(audioClipData, 0);
+            end?.Invoke(clip);
+        }
+
+
+#if !UNITY_WEBGL
         /// <summary>
         /// Taskを起動する
         /// </summary>
@@ -177,34 +195,7 @@ namespace Test
                 }
             });
         }
+#endif
+
     }
 }
-
-
-
-// /// <summary>
-// /// 時刻dspstartから再生開始するAudioClipを生成する
-// /// </summary>
-// private async Task<AudioClip> CreateAudioClip2(double dspstart, int sampleoffset, Action<AudioClip> action)
-// {
-//     var b = new Buffer(c);
-//     double block_time = dspstart;
-//     double block_length = c.blockSamples / (double)c.frequency;
-//     int k = 0;
-//     for (int i = 0; i < c.audioClipBlockCount; ++i)
-//     {
-//         onGetBuffer(block_time, sampleoffset, c, b);
-//         for (int j = 0; j < c.blockSamples; ++j)
-//         {
-//             audioClipData[k] = b.left[j];
-//             ++k;
-//             audioClipData[k] = b.right[j];
-//             ++k;
-//         }
-//         block_time += block_length;
-//         sampleoffset += c.blockSamples;
-//     }
-//     var clip = AudioClip.Create("Sound", c.audioClipChannelSampleSize, 2, c.frequency, false);
-//     clip.SetData(audioClipData, 0);
-//     return clip;
-// }
