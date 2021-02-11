@@ -48,7 +48,7 @@ namespace Test
             {
                 waveAudioClip = WaveAudioClip.CreateWavAudioClip("Bytes/TightFunkBreak-mono.wav");
             });
-            debugButton.AddButton("OchestraStrings", () =>
+            debugButton.AddButton("Ochestra\nStrings", () =>
             {
                 waveAudioClip = WaveAudioClip.CreateWavAudioClip("Bytes/OchestraStrings-mono.wav");
             });
