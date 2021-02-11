@@ -65,6 +65,8 @@ namespace Test
             while (true)
             {
                 Debug.Log($"dspstart:{dspstart:0.00}");
+                // 過去に生成したAudioClipオブジェクトを解放
+                Resources.UnloadUnusedAssets();                
                 while (dspstart - c.audioClipCreateOffsetTime > AudioSettings.dspTime)
                 {
                     yield return 0;

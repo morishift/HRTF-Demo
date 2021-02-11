@@ -39,14 +39,14 @@ namespace Test
             c = Constant.CreateDefault();
             ImpulseResponses.LoadAll(c);
 
-            waveAudioClip = WaveAudioClip.CreateWavAudioClip("Bytes/TightFunkBreak-mono.wav");
+            waveAudioClip = WaveAudioClip.CreateWavAudioClip("Bytes/DrumLoop2.wav");
             debugButton.AddButton("Drum1", () =>
             {
-                waveAudioClip = WaveAudioClip.CreateWavAudioClip("Bytes/TightFunkBreak-mono.wav");
+                waveAudioClip = WaveAudioClip.CreateWavAudioClip("Bytes/DrumLoop2.wav");
             });
             debugButton.AddButton("Drum2", () =>
             {
-                waveAudioClip = WaveAudioClip.CreateWavAudioClip("Bytes/DrumLoop2.wav");
+                waveAudioClip = WaveAudioClip.CreateWavAudioClip("Bytes/TightFunkBreak-mono.wav");
             });
             debugButton.AddButton("OchestraStrings", () =>
             {
@@ -100,6 +100,7 @@ namespace Test
                 overlapAddLeft.SetIdentifyImpulseResponse();
                 overlapAddRight.SetIdentifyImpulseResponse();
             }
+
             overlapAddLeft.Convolution(bufferSample);
             overlapAddRight.Convolution(bufferSample);
             float[] ret_l = overlapAddLeft.GetConvolution();
