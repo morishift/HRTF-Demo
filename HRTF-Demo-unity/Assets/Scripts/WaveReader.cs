@@ -36,6 +36,9 @@ namespace Test
 
     public static class WaveReader
     {
+        /// <summary>
+        /// Waveファイルのバイト列を解析
+        /// </summary>
         public static WaveRIFF Load(byte[] binary)
         {
             WaveRIFF w = new WaveRIFF();
@@ -103,7 +106,7 @@ namespace Test
         {
             w.dataChunkHeader = fmt;
             w.dataSize = sz;
-            Debug.Assert(w.bitsPerSample == 16);
+            Debug.Assert(w.bitsPerSample == 16); // 16-bit sample only
             UInt32 sample_count = w.dataSize / 2;
             w.data = new Int16[sample_count];
             for (int i = 0; i < sample_count; ++i)

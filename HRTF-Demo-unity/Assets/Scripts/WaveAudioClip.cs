@@ -64,11 +64,10 @@ namespace Test
         public static WaveAudioClip CreateWavAudioClip(string path)
         {
             var clip = new WaveAudioClip();
-            var wav = new Data();
-            wav.ReadWave(Resources.Load<TextAsset>(path).bytes);
+            var wav = WaveReader.Load(Resources.Load<TextAsset>(path).bytes);
             clip.samples = wav.data.Length;
-            clip.channels = wav.header.Channel;
-            clip.frequency = wav.header.SampleRate;            
+            clip.channels = wav.channels;
+            clip.frequency = (int)wav.sampleRate;
             clip.waveData = new float[wav.data.Length];
             // 16bitデータを-1～1に変換
             for (int i = 0; i < wav.data.Length; ++i)
