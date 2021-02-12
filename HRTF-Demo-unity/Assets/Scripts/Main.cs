@@ -27,7 +27,7 @@ namespace Test
         AudioClipStreamingPlayer audioClipStreamingPlayer;
 
         Constant c;
-        bool isTouched;
+        bool isPlaying;
         WaveAudioClip waveAudioClip;
         OverlapAdd overlapAddLeft;
         OverlapAdd overlapAddRight;
@@ -56,6 +56,11 @@ namespace Test
             {
                 waveAudioClip = WaveAudioClip.CreateWavAudioClip("Bytes/PoliseCarSiren-mono.wav");
             });
+            debugButton.AddButton("Stop", () =>
+            {
+                isPlaying = false;
+                audioClipStreamingPlayer.Stop();
+            });
             positionCircle.onTouched += OnTouched;
             overlapAddLeft = new OverlapAdd(c);
             overlapAddRight = new OverlapAdd(c);
@@ -68,11 +73,11 @@ namespace Test
         /// </summary>
         private void OnTouched()
         {
-            if (isTouched)
+            if (isPlaying)
             {
                 return;
             }
-            isTouched = true;
+            isPlaying = true;
             audioClipStreamingPlayer.Play(AudioSettings.dspTime + 1.0);
         }
 
