@@ -4,6 +4,11 @@ using UnityEngine;
 
 namespace Test
 {
+    /// <summary>
+    /// 参考:
+    /// C言語による標準アルゴリズム事典
+    /// https://github.com/okumuralab/algo-c/blob/master/src/fft.c
+    /// </summary>
     public class Fft
     {
         float[] sintbl;
