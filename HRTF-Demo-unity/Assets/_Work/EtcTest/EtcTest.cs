@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using System.IO;
 
 namespace Test
 {
@@ -16,7 +17,7 @@ namespace Test
 
         float[] x1;
         float[] x2;
-        float[] impulseX;        
+        float[] impulseX;
 
         [SerializeField]
         bool convertTestFlg;
@@ -26,6 +27,8 @@ namespace Test
         bool impulseResponsesFlg;
         [SerializeField]
         bool audioClipStreamingPlayerTestFlg;
+        [SerializeField]
+        bool fileLoadTestFlg;
 
         WaveAudioClip waveAudioClip;
 
@@ -35,6 +38,7 @@ namespace Test
             FftTest();
             ImpulseResponsesTest();
             AudioClipStreamingPlayerTest();
+            FileLoadTest();
         }
 
         /// <summary>
@@ -157,6 +161,24 @@ namespace Test
         {
             waveAudioClip.GetData(block.left, sampleoffset, block.left.Length);
             waveAudioClip.GetData(block.right, sampleoffset, block.right.Length);
+        }
+
+
+        /// <summary>
+        /// ファイルロードテスト
+        /// </summary>
+        private void FileLoadTest()
+        {
+            if (!fileLoadTestFlg)
+                return;
+            debugButton.AddButton("ロード1", () =>
+            {
+                WaveReader.Load(Resources.Load<TextAsset>("Bytes/elev0/L0e000a.wav").bytes);
+            });
+            debugButton.AddButton("ロード2", () =>
+            {
+                WaveReader.Load(Resources.Load<TextAsset>("Bytes/DrumLoop2.wav").bytes);
+            });
         }
     }
 }

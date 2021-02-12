@@ -89,7 +89,8 @@ namespace Test
         }
 
         /// <summary>
-        /// 角度に対応するサウンドデータ取得 子スレッドから実行される
+        /// 角度に対応するサウンドデータ取得
+        /// WebGLでない場合はサブスレッドから実行される
         /// </summary>
         public void GetBlockBuffer(int angle, int sampleoffset, AudioClipStreamingPlayer.BlockBuffer buffer)
         {

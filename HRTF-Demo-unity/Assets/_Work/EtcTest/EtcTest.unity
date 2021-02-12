@@ -798,7 +798,8 @@ MonoBehaviour:
   convertTestFlg: 0
   fftTestFlg: 0
   impulseResponsesFlg: 0
-  audioClipStreamingPlayerTestFlg: 1
+  audioClipStreamingPlayerTestFlg: 0
+  fileLoadTestFlg: 1
 --- !u!1 &1222582794
 GameObject:
   m_ObjectHideFlags: 0
