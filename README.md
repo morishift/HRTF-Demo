@@ -5,7 +5,7 @@
 https://morishift.github.io/HRTF-Demo/HRTF-Demo-WebGL/index.html
 
 # HRTF Data
-MIT Media Laboratory のHRTFデータセットを利用しています。  
+MIT Media Laboratory のHRTFデータを利用しています。  
 Bill Gardner and Keith Martin  
 MIT Media Lab  
 HRTF Measurements of a KEMAR Dummy-Head Microphone  
